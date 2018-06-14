@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员用户列表</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css">
+    <link href="__PUBLIC__/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/css/animate.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/style.min.css?v=4.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/css/plugins/dataTables/dataTables.bootstrap.css">
+    <link href="__PUBLIC__/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/css/pagelist.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/plugins/datapicker/datepicker3.css">
+</head>
+<body>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>用户<small>查找</small></h5>
+                        <div class="ibox-tools">
+                            <a href="{:U('AdminUser/Userlist')}" class="btn btn-sm btn-primary">
+                                <i class="fa fa-rotate-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper " role="grid">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <form action="{:U('AdminUser/Userlist')}" method="post" class="form-inline" role="form">
+                                        <div class="form-group">
+                                            <input type="text" placeholder="用户名" class="form-control input-sm" name="search" value="{$search}">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="submit" class="btn btn-sm btn-primary" value="查询" style="margin-top:5px;">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <table class="table table-striped table-bordered table-hover dataTables-example dataTable text-center" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                            <thead>
+                                <tr role="row">
+                                    <th>序号</th>
+                                    <th>用户名称</th>
+                                    <th>用户状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <foreach name="list" item="v" key="k">
+                                <tr class="">
+                                    <td class="sorting_1">{$k+1}</td>
+                                    <td>{$v.uname}</td>
+                                    <td><if condition="$v.status eq 1"><button class="btn btn-primary">正常使用</button><else /><button class="btn btn-danger">已经禁用</button></if></td>
+                                    <td class=" ">
+                                        <a class="updateStatus" idinfo="{$v.id}" msg="<if condition="$v.status eq 1">禁用<else />启用</if>"><if condition="$v.status eq 1">禁用<else />启用</if></a>
+                                    </td>
+                                </tr>
+                                </foreach>
+
+                            </tbody>
+                        </table><div class="row">
+                            <div class="col-sm-6"></div>
+                            <div class="col-sm-6 text-right">
+                                <div class="pagination" id="DataTables_Table_0_paginate">
+                                    {$show}
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="__PUBLIC__/js/jquery.min.js"></script>
+<script src="__PUBLIC__/js/bootstrap.min.js"></script>
+<script src="__PUBLIC__/js/plugins/layer/layer.min.js"></script>
+<script src="__PUBLIC__/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script src="__PUBLIC__/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+<script>
+    $(".input-daterange").datepicker({
+        keyboardNavigation: !1,
+        forceParse: !1,
+        autoclose: !0
+    });
+</script>
+
+<script>
+    // 上下稿操作
+    $('.updateStatus').on('click',function(){
+        var this_   = $(this);
+        var id      = this_.attr('idinfo');
+        var msg     = this_.attr('msg');
+        swal({
+            title: "您确定要"+msg+"吗",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: msg,
+            closeOnConfirm: false
+        }, function () {        
+            if(id){
+                $.post("{:U('AdminUser/banLogin')}",{id:id},function(data){
+                   if(data.status == 1){
+                        refresh();
+                        swal(msg+"成功！", "success");
+                   }
+                    
+                })
+            }
+            
+        });
+
+    })
+
+    var refresh = function () {
+        location.reload();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标签列表</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css">
+    <link href="__PUBLIC__/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/css/animate.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/style.min.css?v=4.0.0" rel="stylesheet">
+    <link href="__PUBLIC__/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/pagelist.css" rel="stylesheet">
+    <style>
+        .mytipmsg{font-size: 16px;font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>所有标签</h5>
+                        <div class="ibox-tools">
+                            
+                            <a href="" id="loading-example-btn" class="btn btn-sm btn-success"><i class="fa fa-rotate-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row m-b-sm m-t-sm">
+                            <div class="col-md-12">
+                                <form method="post" action="{:U('TopicCate/TopicCateList')}">
+                                <div class="col-sm-4">
+                                    <div class="input-group">
+                                       
+                                        <input placeholder="请输入分类名称" class="input-sm form-control" type="text" name="searchname"> <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-sm btn-primary"> 搜索</button> </span>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <if condition="$list neq null">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>名称</th>
+                                        <th width="30%">操作</th>
+                                    </tr>
+                                <foreach name="list" item="vo">
+                                    <tr>
+                                        <td class="text-center">{$vo.id}</td>
+                                        <td class="">
+                                            <a <if condition="$vo.level neq 2"> href="{:U('ArticleCate/ArticleCateList',array('pid'=>$vo['id']))}" </if>>{$vo.cate_name}
+                                            </a>
+                                            <br>
+                                            <small>创建于 {$vo.indate}</small>
+                                        </td>
+                                        <td class="">
+                                            <a class="btn btn-white btn-sm" href="{:U('updateCate',array('id'=>$vo['id']))}">编辑</a>
+
+                                            <a class="btn btn-white btn-sm status show_{$vo.id}" data="{$vo.id}" status="{$vo.status}">禁用</a>
+                                        </td>
+                                    </tr>
+                                </foreach>
+                                </tbody>
+                                </table>
+                                <else / >
+                                    <center>暂无数据~</center>
+                                </if>
+                                <div class="text-right">
+                                    <div class="pagination">{$page}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+   
+
+
+    </div>
+<script src="__PUBLIC__/js/jquery.min.js"></script>
+<script src="__PUBLIC__/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script>
+        var refresh = function () {
+            location.reload();  
+        }
+        // 操作分类的使用状态
+        $('.status').on('click',function(){
+            var this_  = $(this);
+            var status = $(this).html();
+            var id     = $(this).attr('data');
+            var staVal  = $(this).attr('status');
+            swal({
+                title: "您确定要"+status+"这条信息吗",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: status,
+                closeOnConfirm: false
+            }, function () {
+                $.post("{:U('TopicCate/updateCateStatus')}",{id:id,status:staVal},function(msg){
+                    console.log(msg);
+                   if(msg.status == 1){
+                        if(staVal == 1){
+                            $('.show_'+id).html('使用');
+                            $('.usetype_'+id).html('不在使用');
+                            $('.usetype_'+id).css('background','#ED5565');
+                            this_.attr('status','0');
+                        }else{
+                            $('.show_'+id).html('禁用');
+                            $('.usetype_'+id).html('正在使用');
+                            $('.usetype_'+id).css('background','#1AB394');
+                            this_.attr('status','1');
+                        }
+                        
+                   }
+                })
+                swal(status+"成功！", "", "success");
+                refresh();
+
+            });
+        })
+    </script>
+</body>
+</html>

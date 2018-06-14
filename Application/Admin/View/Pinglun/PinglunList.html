@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>评论列表</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/bootstrap.min.css">
+  
+    <link href="__PUBLIC__/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/pagelist.css" rel="stylesheet">
+
+
+    <link href="__PUBLIC__/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="__PUBLIC__/css/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+
+    <link href="__PUBLIC__/css/animate.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/style.min.css?v=4.0.0" rel="stylesheet"><base target="_blank">
+    <link rel="stylesheet" href="__PUBLIC__/css/plugins/datapicker/datepicker3.css">
+    <style>
+        .mytipmsg{font-size: 16px;font-weight: bold;}
+        .showCenter{
+            text-align: center;
+        }
+        .lightBoxGallery img {
+            margin: 5px;
+            width: 160px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight height">
+    <div class="row">
+        <div class="ibox">
+            <div class="ibox-title">
+                <div class="text-muted small pull-right">
+                    <button class="btn btn-white btn-sm" onclick="refresh();" data-toggle="tooltip" data-original-title="刷新"><i class="fa fa-refresh"></i></button>
+                </div>
+                <h2>评论列表</h2>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <form action="{:U('PinglunList')}" method="post" class="form-inline" role="form" >
+                            <div class="form-group">
+                                <input  value="{$searchname}" placeholder="查找文章标题\评论内容" class="input-sm form-control" type="text" name="searchname" > 
+    
+                                <div class="input-group input-daterange">
+                                    <input type="text"  name="start" class="form-control input-sm" name="keyword" value="{$start}" placeholder="起始时间">
+                                        <span class="input-group-addon">到</span>
+                                    <input type="text" name="end" class="form-control input-sm" name="keyword" value="{$end}" placeholder="结束时间" >
+                                </div>
+                            </div>
+                           
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-sm btn-primary" value="查询" style="margin-top:5px;">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- <div class="col-sm-11">
+                        <div class="form-group">
+                            <div class=""><small>查询间隔不要超过2个月！</small></div>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="clients-list">
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="full-height-scroll">
+                                <div class="table-responsive margin-top">
+                                    <table class="table table-striped table-hover">
+                                        <tbody>
+                                        <tr>
+                                            <th>序号</th>
+                                            <th>评论文章标题(id)/话题标题(id)</th>
+                                            <th>评论用户</th>
+                                            <th>评论内容</th>
+                                            <th>评论图片</th>
+                                            <th>评论点赞数量</th>
+                                            <th>评论时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        <if condition="$list neq null">
+                                        <foreach name="list" item="v" key="key">
+                                            <tr>
+                                                <td class="col-lg-1 showCenter">{$key+1}</td>
+                                                <td class="showCenter">{$v.art_name}</td>
+                                                <td class="showCenter">
+                                                    <span data-toggle="tooltip" title="{$v.art_desc}">{$v.nickname}</span>
+                                                </td>
+                                                <td class="showCenter">{$v.content|default='-'}</td>
+                                              
+                                                <td class="showCenter lightBoxGallery"><a href="{$v.pl_pic}" title="图片" data-gallery=""><span class="glyphicon glyphicon-picture" aria-hidden="true"></a></span></td>
+                                                <td class="showCenter">
+                                                    {$v.like_num}
+                                                </td>
+                                                <td class="showCenter">{$v.indate}</td>
+                                                <td class="client-status showCenter">
+                                                    <a href="{:U('deleteArticle',array('artid'=>$v['id']))}" onclick="return confirm('确定删除吗?删除后将无法恢复')" class="text-danger" data-toggle="tooltip" title="删除"><i class="fa fa-trash-o fa-lg"></i></a>
+                                                </td>
+                                            </tr>
+                                        </foreach>
+                                        <else />
+                                            <tr>
+                                                <td colspan="9"><center>未搜到此数据信息</center></td>
+                                            </tr>
+                                        </if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="blueimp-gallery" class="blueimp-gallery">
+                                    <div class="slides"></div>
+                                    <h3 class="title"></h3>
+                                    <a class="prev">‹</a>
+                                    <a class="next">›</a>
+                                    <a class="close">×</a>
+                                    <a class="play-pause"></a> 
+                                    <ol class="indicator"></ol>
+                                </div>
+                                <div class="pagination">{$page}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
+<script src="__PUBLIC__/js/bootstrap.min.js?v=3.3.5"></script>
+<script src="__PUBLIC__/js/content.min.js?v=1.0.0"></script>
+<script src="__PUBLIC__/js/plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
+<script src="__PUBLIC__/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+<script>
+    $(".input-daterange").datepicker({
+        keyboardNavigation: !1,
+        forceParse: !1,
+        autoclose: !0
+    });
+</script>
+<script>
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+    refresh = function () {
+        location.reload();
+    }
+
+</script>
+</body>
+
+</html>
